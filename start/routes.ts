@@ -32,4 +32,7 @@ router.put('/farms/:farmId', [FarmsController, 'updateFarm']).where('farmId', /^
 router.delete('/farms/:farmId', [FarmsController, 'deleteFarm']).where('farmId', /^[0-9]+$/)
 
 router.get('/producers', [ProducersController, 'getAll'])
-router.post('/producers', [ProducersController, 'create'])
+router.post('/producers', [ProducersController, 'createProducer'])
+router
+  .put('/producers/:producerId', [ProducersController, 'updateProducer'])
+  .where('producerId', /^[0-9]+$/)
