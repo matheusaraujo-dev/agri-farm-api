@@ -6,9 +6,15 @@ export default class DashboardController {
     const farms = await FarmRepository.getAll()
     const totalFarms = farms.length
 
-    const cards: { title: string; value: number }[] = [
-      { title: 'Total de Fazendas', value: totalFarms },
-    ]
+    const totalAreasByType = farms.reduce(
+      (acc, farm) => ({
+        cultivatedArea: acc.cultivatedArea + farm.cultivatedArea,
+        vegetationArea: acc.vegetationArea + farm.vegetationArea,
+      }),
+      { cultivatedArea: 0, vegetationArea: 0 }
+    )
+
+    const totalHectares = totalAreasByType.cultivatedArea + totalAreasByType.vegetationArea
 
     const farmsByState = farms.reduce(
       (acc, farm) => {
@@ -31,6 +37,6 @@ export default class DashboardController {
       { arable: 0, vegetation: 0 }
     )
 
-    return response.json({ farmsByState, landUse, cards })
+    return response.json({ farmsByState, landUse, totalFarms, totalAreasByType, totalHectares })
   }
 }

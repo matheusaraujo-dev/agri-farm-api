@@ -17,3 +17,11 @@ export default class Harvest extends BaseModel {
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 }
+
+export interface HarvestSerialized {
+  id: number
+  name: string
+  farmId: number
+  baseYear: number
+  createdAt: DateTime
+}

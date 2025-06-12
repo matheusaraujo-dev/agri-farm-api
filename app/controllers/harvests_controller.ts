@@ -1,8 +1,15 @@
 import Harvest from '#models/harvest'
-import { createHarvestValidator } from '#validators/index'
 import type { HttpContext } from '@adonisjs/core/http'
 import { FarmHarvestCultureRepository } from '../repositories/farm_harvest_culture.repository.js'
 import { CropRepository } from '../repositories/crop.repository.js'
+import { FarmRepository } from '../repositories/farm.repository.js'
+import { HarvestRepository } from '../repositories/harvest.repository.js'
+import { createHarvestValidator, deleteHarvestValidator } from '#validators/harvest_validators'
+import {
+  addCropToHarvestValidator,
+  deleteCropHarvestValidator,
+  updateCropHarvestValidator,
+} from '#validators/harvest_crop_validators'
 
 export default class HarvestsController {
   async getAll({ response }: HttpContext) {
@@ -40,5 +47,111 @@ export default class HarvestsController {
     })
 
     return response.status(201).json({ harvest })
+  }
+
+  async addCropToHarvest({ request, response }: HttpContext) {
+    const validator = await addCropToHarvestValidator.safeParseAsync(request.body())
+
+    if (!validator.success) {
+      return response.status(422).json(validator.error.format())
+    }
+    const { cropId, farmId, harvestId } = validator.data
+
+    const farm = await FarmRepository.find(farmId)
+    if (!farm) {
+      return response.status(404).json({ error: 'Farm not found.' })
+    }
+
+    const harvest = await Harvest.find(harvestId)
+    if (!harvest) {
+      return response.status(404).json({ error: 'Harvest not found.' })
+    }
+
+    const crop = await CropRepository.find(cropId)
+    if (!crop) {
+      return response.status(404).json({ error: 'Crop not found.' })
+    }
+
+    await FarmHarvestCultureRepository.create({
+      harvestId,
+      cropId,
+      farmId,
+    })
+
+    return response.status(201).json({ message: 'Crop added to harvest successfully.' })
+  }
+
+  async updageCropToHarvest({ request, response }: HttpContext) {
+    const validator = await updateCropHarvestValidator.safeParseAsync(request.body())
+
+    if (!validator.success) {
+      return response.status(422).json(validator.error.format())
+    }
+    const { newCropId, oldCropId, farmId, harvestId } = validator.data
+
+    const item = await FarmHarvestCultureRepository.query()
+      .where('farm_id', farmId)
+      .andWhere('harvest_id', harvestId)
+      .andWhere('crop_id', oldCropId)
+      .first()
+
+    if (!item) {
+      return response.status(404).json({ error: 'Crop not found in the specified harvest.' })
+    }
+
+    await FarmHarvestCultureRepository.updateHarvestCrop({
+      harvestId,
+      newCropId,
+      farmId,
+      oldCropId,
+    })
+
+    return response.status(201).json({ message: 'Crop updated to harvest successfully.' })
+  }
+
+  async deleteCropToHarvest({ request, response }: HttpContext) {
+    const validator = await deleteCropHarvestValidator.safeParseAsync(request.body())
+
+    if (!validator.success) {
+      return response.status(422).json(validator.error.format())
+    }
+    const { cropId, farmId, harvestId } = validator.data
+
+    const item = await FarmHarvestCultureRepository.query()
+      .where('farm_id', farmId)
+      .andWhere('harvest_id', harvestId)
+      .andWhere('crop_id', cropId)
+      .first()
+
+    if (!item) {
+      return response.status(404).json({ error: 'Crop not found in the specified harvest.' })
+    }
+
+    await FarmHarvestCultureRepository.deleteHarvestCrop({
+      harvestId,
+      cropId,
+      farmId,
+    })
+
+    return response.status(201).json({ message: 'Crop deleted to harvest successfully.' })
+  }
+
+  async deleteHarvest({ request, response }: HttpContext) {
+    const validator = await deleteHarvestValidator.safeParseAsync(request.body())
+
+    if (!validator.success) {
+      return response.status(422).json(validator.error.format())
+    }
+    const { harvestId } = validator.data
+
+    const item = await HarvestRepository.query().where('id', harvestId).first()
+
+    if (!item) {
+      return response.status(404).json({ error: 'Crop not found in the specified harvest.' })
+    }
+
+    await HarvestRepository.deleteHarvest(harvestId)
+
+    return response.status(201).json({ message: 'Harvest deleted successfully.' })
   }
 }

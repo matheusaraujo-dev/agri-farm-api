@@ -14,3 +14,10 @@ export default class Producer extends BaseModel {
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 }
+
+export interface ProducerSerialized {
+  id: number
+  name: string
+  document: string
+  createdAt: string
+}

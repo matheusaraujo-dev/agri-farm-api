@@ -11,6 +11,8 @@ export default class extends BaseSchema {
       table.integer('base_year').unsigned().notNullable()
 
       table.timestamp('created_at')
+
+      table.unique(['id', 'farm_id'], { indexName: 'idx_harvests_id_farm_id' })
     })
   }
 

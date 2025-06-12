@@ -1,5 +1,5 @@
 import Producer from '#models/producer'
-import { createProducerValidator } from '#validators/index'
+import { createProducerValidator } from '#validators/producer_validators'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class ProducersController {

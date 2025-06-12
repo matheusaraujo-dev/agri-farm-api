@@ -1,7 +1,7 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'farm_harvest_cultures'
+  protected tableName = 'farm_harvest_crops'
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
@@ -11,7 +11,8 @@ export default class extends BaseSchema {
       table.integer('crop_id').unsigned().notNullable().references('id').inTable('crops')
       table.timestamp('created_at')
 
-      table.unique(['farm_id', 'harvest_id', 'crop_id'], 'unique_farm_harvest_crop')
+      table.foreign(['farm_id', 'harvest_id']).references(['farm_id', 'id']).inTable('harvests')
+      table.unique(['farm_id', 'harvest_id', 'crop_id'], { indexName: 'unique_farm_harvest_crop' })
     })
   }
 

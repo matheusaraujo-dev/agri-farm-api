@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 
-export default class FarmHarvestCultures extends BaseModel {
-  static table = 'farm_harvest_cultures'
+export default class FarmHarvestCrops extends BaseModel {
+  static table = 'farm_harvest_crops'
 
   @column({ isPrimary: true })
   declare id: number
