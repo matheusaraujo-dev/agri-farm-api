@@ -15,7 +15,7 @@ export default class Crop extends BaseModel {
   declare createdAt: DateTime
 }
 
-export interface CultureSerialized {
+export interface CropSerialized {
   id: number
   name: string
   code: string

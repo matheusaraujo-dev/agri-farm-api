@@ -1,9 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { FarmRepository } from '../repositories/farm.repository.js'
+import { FarmHarvestCropRepository } from '../repositories/farm_harvest_culture.repository.js'
 
 export default class DashboardController {
   async getDashboardData({ response }: HttpContext) {
     const farms = await FarmRepository.getAll()
+    const cropsGrouped = await FarmHarvestCropRepository.getCropsGroupedCount()
     const totalFarms = farms.length
 
     const totalAreasByType = farms.reduce(
@@ -14,7 +16,7 @@ export default class DashboardController {
       { cultivatedArea: 0, vegetationArea: 0 }
     )
 
-    const totalHectares = totalAreasByType.cultivatedArea + totalAreasByType.vegetationArea
+    const totalHectares = farms.reduce((acc, farm) => acc + farm.totalArea, 0)
 
     const farmsByState = farms.reduce(
       (acc, farm) => {
@@ -37,6 +39,13 @@ export default class DashboardController {
       { arable: 0, vegetation: 0 }
     )
 
-    return response.json({ farmsByState, landUse, totalFarms, totalAreasByType, totalHectares })
+    return response.json({
+      farmsByState,
+      landUse,
+      totalFarms,
+      totalAreasByType,
+      totalHectares,
+      cropsGrouped,
+    })
   }
 }

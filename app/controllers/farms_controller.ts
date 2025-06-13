@@ -1,6 +1,6 @@
 import Farm from '#models/farm'
 import type { HttpContext } from '@adonisjs/core/http'
-import { FarmHarvestCultureRepository } from '../repositories/farm_harvest_culture.repository.js'
+import { FarmHarvestCropRepository } from '../repositories/farm_harvest_culture.repository.js'
 import Crop from '#models/crop'
 import Harvest from '#models/harvest'
 import { createFarmValidator, updateFarmValidator } from '#validators/farm_validators'
@@ -16,7 +16,7 @@ export default class FarmsController {
     const producers = await ProducerRepository.query().whereIn('id', producerIds)
     const cultures = await Crop.all()
     const harvests = await Harvest.query().whereIn('farm_id', farmIds)
-    const harvCropByFarm = await FarmHarvestCultureRepository.getByFarmIds(farmIds)
+    const harvCropByFarm = await FarmHarvestCropRepository.getByFarmIds(farmIds)
 
     const responseData = farms.map((farm) => {
       const producer = producers.find((p) => p.id === farm.producerId)

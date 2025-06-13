@@ -1,6 +1,6 @@
 import Harvest from '#models/harvest'
 import type { HttpContext } from '@adonisjs/core/http'
-import { FarmHarvestCultureRepository } from '../repositories/farm_harvest_culture.repository.js'
+import { FarmHarvestCropRepository } from '../repositories/farm_harvest_culture.repository.js'
 import { CropRepository } from '../repositories/crop.repository.js'
 import { FarmRepository } from '../repositories/farm.repository.js'
 import { HarvestRepository } from '../repositories/harvest.repository.js'
@@ -14,7 +14,7 @@ import {
 export default class HarvestsController {
   async getAll({ response }: HttpContext) {
     const harvests = await Harvest.query().orderBy('base_year', 'desc')
-    const fhcs = await FarmHarvestCultureRepository.getByHarvestIds(harvests.map((h) => h.id))
+    const fhcs = await FarmHarvestCropRepository.getByHarvestIds(harvests.map((h) => h.id))
     const allCultures = await CropRepository.getAll()
 
     const harvestsWithCultures = harvests.map((harvest) => {
@@ -72,7 +72,7 @@ export default class HarvestsController {
       return response.status(404).json({ error: 'Crop not found.' })
     }
 
-    await FarmHarvestCultureRepository.create({
+    await FarmHarvestCropRepository.create({
       harvestId,
       cropId,
       farmId,
@@ -89,7 +89,7 @@ export default class HarvestsController {
     }
     const { newCropId, oldCropId, farmId, harvestId } = validator.data
 
-    const item = await FarmHarvestCultureRepository.query()
+    const item = await FarmHarvestCropRepository.query()
       .where('farm_id', farmId)
       .andWhere('harvest_id', harvestId)
       .andWhere('crop_id', oldCropId)
@@ -99,7 +99,7 @@ export default class HarvestsController {
       return response.status(404).json({ error: 'Crop not found in the specified harvest.' })
     }
 
-    await FarmHarvestCultureRepository.updateHarvestCrop({
+    await FarmHarvestCropRepository.updateHarvestCrop({
       harvestId,
       newCropId,
       farmId,
@@ -117,7 +117,7 @@ export default class HarvestsController {
     }
     const { cropId, farmId, harvestId } = validator.data
 
-    const item = await FarmHarvestCultureRepository.query()
+    const item = await FarmHarvestCropRepository.query()
       .where('farm_id', farmId)
       .andWhere('harvest_id', harvestId)
       .andWhere('crop_id', cropId)
@@ -127,7 +127,7 @@ export default class HarvestsController {
       return response.status(404).json({ error: 'Crop not found in the specified harvest.' })
     }
 
-    await FarmHarvestCultureRepository.deleteHarvestCrop({
+    await FarmHarvestCropRepository.deleteHarvestCrop({
       harvestId,
       cropId,
       farmId,
