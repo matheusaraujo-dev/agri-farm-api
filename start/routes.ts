@@ -36,3 +36,6 @@ router.post('/producers', [ProducersController, 'createProducer'])
 router
   .put('/producers/:producerId', [ProducersController, 'updateProducer'])
   .where('producerId', /^[0-9]+$/)
+router
+  .delete('/producers/:producerId', [ProducersController, 'deleteProducer'])
+  .where('producerId', /^[0-9]+$/)

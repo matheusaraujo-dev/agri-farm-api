@@ -7,6 +7,11 @@ export class FarmRepository extends Farm {
     return cultures.map((f) => f.serialize()) as FarmSerialized[]
   }
 
+  static async getFarmsByProducerId(producerId: number) {
+    const farms = await this.query().where('producer_id', producerId).orderBy('name', 'asc')
+    return farms.map((f) => f.serialize()) as FarmSerialized[]
+  }
+
   static async deleteFarm(farmId: number) {
     await HarvestRepository.deleteHarvestByFarmId(farmId)
     await this.query().where('id', farmId).delete()

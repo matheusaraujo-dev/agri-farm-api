@@ -38,4 +38,15 @@ export default class ProducersController {
 
     return response.status(201).json({ message: 'Producer updated successfully' })
   }
+
+  async deleteProducer({ request, response }: HttpContext) {
+    const producerId = Number(request.param('producerId'))
+    const producer = await ProducerRepository.query().where('id', producerId).first()
+    if (!producer) {
+      return response.status(404).json({ error: `Producer not found for id ${producerId}` })
+    }
+
+    await ProducerRepository.deleteProducer(producerId)
+    return response.status(204).json({ message: 'Producer deleted successfully' })
+  }
 }
